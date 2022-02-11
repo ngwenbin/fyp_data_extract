@@ -54,7 +54,7 @@ def parse_files(fileDir):
         ptr = CSV_obj(i)
         ptr.df.plot.line(lw=0.5, ax=ax)
 
-    plt.savefig("export.png", format="png", dpi=150)
+    plt.savefig("{}/export.png".format(fileDir), format="png", dpi=150)
     plt.show()
     plt.close()
 
