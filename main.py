@@ -39,7 +39,7 @@ class CSV_obj:
 
     def __createdataframe(self):
         self.df = pd.read_csv(self.fpath, usecols=[1], skiprows=15)
-        self.df.rename(columns={'Unnamed: 1': self.fname}, inplace=True)
+        self.df.rename(columns={self.df.columns[0]: self.fname}, inplace=True)
 
 
 def get_files(fileDir):
