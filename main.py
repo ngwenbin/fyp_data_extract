@@ -48,15 +48,24 @@ def get_files(fileDir):
 
 def parse_files(fileDir):
     fig, ax = plt.subplots(figsize=(16, 9))
-
+    total = 0
+    count = 0
+    nums = 0
     ax.set(xlabel='Unit block', ylabel='Volts')
     for i in get_files(fileDir):
         ptr = CSV_obj(i)
         ptr.df.plot.line(lw=0.5, ax=ax)
-
-    plt.savefig("{}/export.png".format(fileDir), format="png", dpi=150)
-    plt.show()
-    plt.close()
+        max_value = ptr.df[ptr.fname].max()
+        if not nums == 0 or not nums == 5:
+            print(nums, max_value)
+            total += max_value
+            count += 1
+        nums += 1
+    avg = total / count
+    print("Average max: {0}".format(avg))
+    # plt.savefig("{}/export.png".format(fileDir), format="png", dpi=150)
+    # plt.show()
+    # plt.close()
 
 
 def main(argv):
