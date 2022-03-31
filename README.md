@@ -24,10 +24,18 @@ env\Scripts\activate
 pip install -r requirements.txt
 ```
 
+4. Store any data in the mydata folder.
+
 ## Usage
 
 ```python
-python main.py -d pathtofoldercontainingcsvs
+python main.py -d PathToFolderContainingCSV --ex RunToExcludeSepWSpaces
+```
+
+### Example usage
+
+```python
+python main.py -d raw_real_data\N0 -x 1 2 3
 ```
 
 ## License
