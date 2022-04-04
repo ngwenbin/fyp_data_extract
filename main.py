@@ -14,8 +14,8 @@ import plotly.express as px
 import numpy as np
 import pandas as pd
 
-options = "d:x:"
-long_options = ["dir", "exclude"]  # Long options
+options = "d:x:b:"
+long_options = ["dir", "exclude", "block"]  # Long options
 fileExt = r".CSV"
 
 xlabel = "Unit block"
@@ -46,7 +46,7 @@ def get_files(fileDir):
     ]
 
 
-def parse_files(fileDir, exclude):
+def parse_files(fileDir, exclude, block_size):
     fig, ax = plt.subplots(figsize=(10, 7))
     total = 0
     count = 0
@@ -56,7 +56,14 @@ def parse_files(fileDir, exclude):
         max_value = ptr.df[ptr.fname].max()  # Gets value of peak
         exlflag = "x "
         if str(i + 1) not in exclude:
-            ptr.df.plot.line(lw=0.5, ax=ax)  # Add line plot
+            if block_size:
+                ptr.df["rolling"] = (
+                    ptr.df[ptr.fname].rolling(block_size, center=True).mean()
+                )
+                ptr.df["rolling"].plot.line(lw=0.5, ax=ax)  # Add line plot
+                max_value = ptr.df["rolling"].max()
+            else:
+                ptr.df[ptr.fname].plot.line(lw=0.5, ax=ax)  # Add line plot
             total += max_value
             count += 1
             exlflag = ""
@@ -69,7 +76,7 @@ def parse_files(fileDir, exclude):
             total, count, avg, exclude
         )
     )
-    plt.savefig("{}/export.png".format(fileDir), format="png", dpi=150)
+    # plt.savefig("{}/export.png".format(fileDir), format="png", dpi=150)
     plt.show()
     plt.close()
 
@@ -77,6 +84,7 @@ def parse_files(fileDir, exclude):
 def main(argv):
     data_dir = ""
     exclude = []
+    block = 0
     try:
         opts, args = getopt.getopt(argv, options, long_options)
         for opt, arg in opts:
@@ -84,14 +92,18 @@ def main(argv):
                 data_dir = arg
                 print("Input directory: {0}".format(arg))
 
-            elif opt in ("-x"):
+            elif opt in ("-x", "--exclude"):
                 exclude = arg.split(",")
                 print("Excluding samples: {0}\n".format(exclude))
+
+            elif opt in ("-b", "--block"):
+                block = int(arg)
+                print("Block : {0}".format(arg))
 
         if len(argv) == 0:
             raise getopt.error("No arguments given")
         elif data_dir:
-            parse_files(data_dir, exclude)
+            parse_files(data_dir, exclude, block)
 
     except getopt.error as err:
         print(str(err))
